@@ -1,12 +1,19 @@
+const path = require("path");
+
 module.exports = {
-  type: 'react-component',
+  type: "react-component",
   npm: {
     esModules: true,
     umd: {
-      global: 'Aperture',
+      global: "Aperture",
       externals: {
-        react: 'React'
+        react: "React"
       }
     }
+  },
+  webpack: {
+    aliases: {
+      src: path.resolve("src")
+    }
   }
-}
+};
