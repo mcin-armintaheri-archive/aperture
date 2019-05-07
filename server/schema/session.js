@@ -7,7 +7,7 @@ const typeDefs = gql`
 
   extend type Mutation {
     login(form: LoginForm): Session
-    logout(): Boolean
+    logout: Boolean
   }
 
   input LoginForm {
@@ -15,7 +15,7 @@ const typeDefs = gql`
     password: String
   }
 
-  type Session  {
+  type Session {
     user: User
   }
 `;
@@ -23,21 +23,25 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     session(_, __, context) {
-      if (context.session.id) {
-        return { user: { id: context.session.id } };
+      if (context.session.userID) {
+        return { user: { id: context.session.userID } };
       }
     }
   },
   Mutation: {
     async login(_, { form }, context) {
-      const set = context.storage.root();
+      const set = await context.storage.root();
 
       let match = null;
       for await (const { value } of set.iterator()) {
+        const userSet = await context.storage.root(value.id);
+
+        const username = await userSet.get("username");
+
         // TODO: lookup password hashes
-        if (form.username === value.username) {
+        if (form.username === username) {
           match = value;
-          context.session.id = value.id;
+          context.session.userID = value.id;
 
           break;
         }
@@ -46,7 +50,7 @@ const resolvers = {
       return { user: match };
     },
     async logout(_, __, context) {
-      delete context.session.id;
+      delete context.session.userID;
     }
   }
 };

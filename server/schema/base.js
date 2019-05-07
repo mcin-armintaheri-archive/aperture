@@ -30,7 +30,7 @@ const resolvers = {
   Record: {
     async read(obj, _, context) {
       async function resolver(obj, _, context) {
-        const set = context.storage.root(obj.id);
+        const set = await context.storage.root(obj.id);
 
         const record = { id: obj.id, read: resolver };
 

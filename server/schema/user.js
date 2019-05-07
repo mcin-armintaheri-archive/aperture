@@ -1,4 +1,3 @@
-const R = require("ramda");
 const { gql } = require("apollo-server");
 
 const typeDefs = gql`
@@ -14,9 +13,9 @@ const typeDefs = gql`
 
   type User implements Record {
     id: ID!
+    read: User
     username: String!
     email: String!
-    submissions: SubmissionFeed
   }
 `;
 
@@ -28,7 +27,9 @@ const resolvers = {
       // TODO: store password hashes
       await userSet.set("username", form.username);
 
-      await context.storage.root().add(userSet.id, true);
+      const root = await context.storage.root();
+
+      await root.add(userSet.id, true);
 
       return;
     }

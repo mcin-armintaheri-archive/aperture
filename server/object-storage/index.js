@@ -32,7 +32,9 @@ module.exports = class ObjectStorage {
   async close() {
     this.unsubExitHook();
 
-    return this.db.close();
+    return this.db.close(err => {
+      if (err) throw err;
+    });
   }
 
   async create() {
@@ -58,7 +60,7 @@ module.exports = class ObjectStorage {
   async generateID() {
     let id = null;
 
-    while (true) {
+    for (;;) {
       id = uuid();
 
       try {

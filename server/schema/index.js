@@ -2,6 +2,9 @@ const { gql } = require("apollo-server");
 const { makeExecutableSchema } = require("graphql-tools");
 
 const base = require("./base");
+const table = require("./table");
+const user = require("./user");
+const session = require("./session");
 
 const typeDefs = gql`
   type Query {
@@ -16,8 +19,20 @@ const typeDefs = gql`
 const resolvers = {};
 
 const schema = makeExecutableSchema({
-  typeDefs: [typeDefs, base.typeDefs],
-  resolvers: [resolvers, base.resolvers],
+  typeDefs: [
+    typeDefs,
+    base.typeDefs,
+    table.typeDefs,
+    user.typeDefs,
+    session.typeDefs
+  ],
+  resolvers: [
+    resolvers,
+    base.resolvers,
+    table.resolvers,
+    user.resolvers,
+    session.resolvers
+  ],
   resolverValidationOptions: {
     requireResolversForResolveType: false
   },

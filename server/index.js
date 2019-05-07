@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const { ApolloServer } = require("apollo-server-express");
 
 const schema = require("./schema");
+const ObjectStorage = require("./object-storage");
 
 require("dotenv").config();
 
@@ -21,7 +22,14 @@ app.use(
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const graphqlServer = new ApolloServer({ schema });
+const storage = new ObjectStorage(process.env.DB_LOCATION);
+
+const graphqlServer = new ApolloServer({
+  schema,
+  context({ req }) {
+    return { session: req.session, storage };
+  }
+});
 
 graphqlServer.applyMiddleware({ app });
 

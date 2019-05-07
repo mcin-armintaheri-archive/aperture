@@ -1,5 +1,3 @@
-const R = require("ramda");
-
 module.exports = class PersistedSet {
   constructor(id, storage) {
     if (!(typeof id === "string") || id.length === 0) {
@@ -36,16 +34,18 @@ module.exports = class PersistedSet {
     const createGenerator = async function*() {
       let data = null;
 
-      while (true) {
-        data = await next();
+      try {
+        for (;;) {
+          data = await next();
 
-        if (!data || !data.key || !data.key.startsWith(self.id)) {
-          await end();
+          if (!data || !data.key || !data.key.startsWith(self.id)) {
+            return;
+          }
 
-          return;
+          yield data;
         }
-
-        yield data;
+      } finally {
+        await end();
       }
     };
 
@@ -78,7 +78,7 @@ module.exports = class PersistedSet {
 
     const res = await this.storage.db.get(fullID);
 
-    return res && res.value && JSON.parse(res.value.toString()).content;
+    return res && JSON.parse(res.toString()).content;
   }
 
   async add(value, ref = false) {
@@ -109,7 +109,7 @@ module.exports = class PersistedSet {
 
   async remove(id = null) {
     if (id === null) {
-      const ops = [{ type: 'del', key: id }];
+      const ops = [{ type: "del", key: id }];
 
       for await (const { key } of this.iterator()) {
         ops.push({ type: "del", key });
