@@ -1,5 +1,7 @@
 const path = require("path");
 
+require("dotenv").config();
+
 module.exports = {
   type: "react-component",
   npm: {
@@ -14,6 +16,13 @@ module.exports = {
   webpack: {
     aliases: {
       src: path.resolve("src")
+    }
+  },
+  devServer: {
+    proxy: {
+      "/graphql": {
+        target: `http://localhost:${process.env.PORT}`
+      }
     }
   }
 };
