@@ -1,3 +1,5 @@
+const uuid = require("uuid/v4");
+
 module.exports = class PersistedSet {
   constructor(id, storage) {
     if (!(typeof id === "string") || id.length === 0) {
@@ -21,7 +23,8 @@ module.exports = class PersistedSet {
             ? reject(err)
             : resolve({
                 key: k && k.toString(),
-                value: v && JSON.parse(v.toString()).content
+                value: v && JSON.parse(v.toString()).content,
+                __storedType: v && JSON.parse(v.toString()).__storedType
               })
         );
       });
@@ -73,16 +76,47 @@ module.exports = class PersistedSet {
     return list;
   }
 
-  async get(id) {
+  async find(id) {
+    let found = null;
+
+    for await (const { value, __storedType } of this.iterator()) {
+      if (__storedType === "REFERENCE" && id && value.id && value.id === id) {
+        found = await this.storage.root(value.id);
+        break;
+      }
+    }
+
+    return found;
+  }
+
+  async get(id, ref = false) {
     const fullID = `${this.id}:${id}`;
 
     const res = await this.storage.db.get(fullID);
 
-    return res && JSON.parse(res.toString()).content;
+    const value = res && JSON.parse(res.toString()).content;
+
+    if (ref) {
+      return this.storage.root(value.id);
+    }
+
+    return value;
+  }
+
+  async create(key = null) {
+    const id = await this.generateID();
+
+    await this.storage.db.put(id, JSON.stringify({ __storedType: "SET" }));
+
+    if (key) {
+      return this.set(key, id, true);
+    }
+
+    return this.add(id, true);
   }
 
   async add(value, ref = false) {
-    const pointerID = await this.storage.generateID();
+    const pointerID = await this.generateID();
 
     return this.set(pointerID, value, ref);
   }
@@ -96,7 +130,7 @@ module.exports = class PersistedSet {
         JSON.stringify({ __storedType: "REFERENCE", content: { id: value } })
       );
 
-      return new PersistedSet(id, this.storage);
+      return this.storage.root(value);
     }
 
     await this.storage.db.put(
@@ -119,5 +153,21 @@ module.exports = class PersistedSet {
     }
 
     return this.storage.db.del(`${this.id}:${id}`);
+  }
+
+  async generateID() {
+    let id = null;
+
+    for (;;) {
+      id = uuid();
+
+      try {
+        await this.db.get(id);
+      } catch (_) {
+        break;
+      }
+    }
+
+    return id;
   }
 };

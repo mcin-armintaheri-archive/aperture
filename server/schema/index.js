@@ -1,10 +1,12 @@
 const { gql } = require("apollo-server");
 const { makeExecutableSchema } = require("graphql-tools");
+const { GraphQLUpload } = require("graphql-upload");
 
 const base = require("./base");
 const table = require("./table");
 const user = require("./user");
 const session = require("./session");
+const submission = require("./submission");
 
 const typeDefs = gql`
   type Query {
@@ -14,9 +16,13 @@ const typeDefs = gql`
   type Mutation {
     _empty: Boolean
   }
+
+  scalar Upload
 `;
 
-const resolvers = {};
+const resolvers = {
+  Upload: GraphQLUpload
+};
 
 const schema = makeExecutableSchema({
   typeDefs: [
@@ -24,14 +30,16 @@ const schema = makeExecutableSchema({
     base.typeDefs,
     table.typeDefs,
     user.typeDefs,
-    session.typeDefs
+    session.typeDefs,
+    submission.typeDefs
   ],
   resolvers: [
     resolvers,
     base.resolvers,
     table.resolvers,
     user.resolvers,
-    session.resolvers
+    session.resolvers,
+    submission.resolvers
   ],
   resolverValidationOptions: {
     requireResolversForResolveType: false

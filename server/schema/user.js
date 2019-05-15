@@ -6,32 +6,35 @@ const typeDefs = gql`
   }
 
   input SignupForm {
-    username: String
-    email: String
-    password: String
+    username: String!
+    password: String!
+    name: String!
+    affiliations: [String]!
+    email: String!
   }
 
   type User implements Record {
     id: ID!
     read: User
     username: String!
+    name: String!
+    affiliations: [String]!
     email: String!
+    submissions: SubmissionFeed!
   }
 `;
 
 const resolvers = {
   Mutation: {
     async signup(_, { form }, context) {
-      const userSet = await context.storage.create();
+      const userSet = await (await context.storage.root()).create();
 
       // TODO: store password hashes
       await userSet.set("username", form.username);
-
-      const root = await context.storage.root();
-
-      await root.add(userSet.id, true);
-
-      return;
+      await userSet.set("name", form.name);
+      await userSet.set("affiliations", form.affiliations);
+      await userSet.set("email", form.email);
+      await userSet.create("submissions");
     }
   }
 };

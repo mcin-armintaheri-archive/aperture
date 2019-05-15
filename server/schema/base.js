@@ -1,6 +1,10 @@
 const { gql } = require("apollo-server");
 
 const typeDefs = gql`
+  extend type Mutation {
+    remove(id: ID!, key: String): Boolean
+  }
+
   enum SortOrder {
     ASC
     DESC
@@ -27,6 +31,11 @@ const typeDefs = gql`
 `;
 
 const resolvers = {
+  Mutation: {
+    async remove(_, { id, key }, context) {
+      (await context.root(id)).remove(key);
+    }
+  },
   Record: {
     async read(obj, _, context) {
       async function resolver(obj, _, context) {
@@ -48,13 +57,13 @@ const resolvers = {
   },
   Feed: {
     async size(obj, _, context) {
-      return context.storage.root.size();
+      return (await context.storage.root(obj.id)).size();
     },
     async all(obj, { options }, context) {
-      return context.storage.root(obj.id).all(options);
+      return (await context.storage.root(obj.id)).all(options);
     },
     async find(obj, { id }, context) {
-      return context.storage.root(obj.id).get(id);
+      return (await context.storage.root(obj.id)).find(id);
     }
   }
 };
