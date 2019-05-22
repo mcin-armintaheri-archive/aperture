@@ -19,10 +19,11 @@ module.exports = {
     }
   },
   devServer: {
-    proxy: {
-      "/graphql": {
+    proxy: [
+      {
+        context: ["/auth", "/graphql"],
         target: `http://localhost:${process.env.PORT}`
       }
-    }
+    ]
   }
 };

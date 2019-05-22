@@ -6,7 +6,7 @@ const typeDefs = gql`
   extend type Mutation {
     newSubmission: ID
     updateSubmission(submissionID: ID!, patch: SubmissionPatch!): Boolean
-    uploadFile(submissionID: ID!, upload: Upload): String
+    uploadFile(submissionID: ID!, upload: Upload): FileUpload
   }
 
   input SubmissionPatch {
@@ -127,7 +127,7 @@ const resolvers = {
       readStream.pipe(writeStream);
 
       return new Promise(resolve =>
-        readStream.on("end", () => resolve(resourceSet.id))
+        readStream.on("end", () => resolve({ id: resourceSet.id }))
       );
     }
   }

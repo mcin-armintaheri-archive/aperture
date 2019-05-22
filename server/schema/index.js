@@ -3,7 +3,6 @@ const { makeExecutableSchema } = require("graphql-tools");
 const { GraphQLUpload } = require("graphql-upload");
 
 const base = require("./base");
-const table = require("./table");
 const user = require("./user");
 const session = require("./session");
 const submission = require("./submission");
@@ -28,7 +27,6 @@ const schema = makeExecutableSchema({
   typeDefs: [
     typeDefs,
     base.typeDefs,
-    table.typeDefs,
     user.typeDefs,
     session.typeDefs,
     submission.typeDefs
@@ -36,7 +34,6 @@ const schema = makeExecutableSchema({
   resolvers: [
     resolvers,
     base.resolvers,
-    table.resolvers,
     user.resolvers,
     session.resolvers,
     submission.resolvers
