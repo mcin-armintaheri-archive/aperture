@@ -106,6 +106,7 @@ app.get(
 
 // sign out
 app.get("/auth/logout", function(req, res) {
+  delete req.session.passport;
   req.logout();
   res.redirect("/");
 });

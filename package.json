@@ -44,12 +44,14 @@
     "npm": "^6.9.0",
     "passport": "^0.4.0",
     "passport-orcid": "0.0.3",
+    "prop-types": "^15.7.2",
     "ramda": "^0.26.1",
     "react-apollo": "^2.5.5",
     "react-apollo-hooks": "^0.4.5",
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0",
     "styled-components": "^4.2.0",
+    "styled-normalize": "^8.0.6",
     "uuid": "^3.3.2"
   },
   "peerDependencies": {

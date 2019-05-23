@@ -4,6 +4,7 @@ const typeDefs = gql`
   type User implements Record {
     id: ID!
     read: User
+    name: String!
     submissions: SubmissionFeed!
   }
 `;
