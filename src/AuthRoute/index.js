@@ -9,9 +9,6 @@ const Component = props => {
       session {
         user {
           id
-          read {
-            name
-          }
         }
       }
     }

@@ -10,6 +10,7 @@ const typeDefs = gql`
   }
 
   input SubmissionPatch {
+    title: String
     authors: [ID]
     abstract: String
     figure: String
@@ -28,12 +29,13 @@ const typeDefs = gql`
   type Submission implements Record {
     id: ID!
     read: Submission
+    title: String!
     authors: [ID]!
     abstract: String!
-    figure: String
+    figure: ID
     awknowledgements: [String]!
     researchLinks: [String]!
-    upload: String
+    upload: ID
     resources: FileUploadFeed
   }
 
@@ -63,6 +65,7 @@ const resolvers = {
       const submissionSet = await submissionsSet.create();
 
       // TODO: store password hashes
+      await submissionSet.set("title", "New Submission");
       await submissionSet.set("authors", []);
       await submissionSet.set("abstract", "");
       await submissionSet.set("awknowledgements", []);
