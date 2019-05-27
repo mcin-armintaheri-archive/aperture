@@ -70,6 +70,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/", express.static(`${__dirname}/../demo/dist`));
+app.use("/static", express.static(process.env.UPLOADS_LOCATION));
 
 app.use(
   session({

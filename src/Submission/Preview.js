@@ -42,10 +42,17 @@ const Component = ({ match }) => {
                   title
                   authors
                   abstract
-                  figure
+                  figure {
+                    id
+                  }
                   awknowledgements
                   researchLinks
-                  upload
+                  upload {
+                    id
+                    read {
+                      filename
+                    }
+                  }
                 }
               }
             }
@@ -117,7 +124,7 @@ const Component = ({ match }) => {
       <div style={{ margin: "10px 0" }} />
       <SubmissionField
         label="Figure"
-        value={<img src={`static/${submission.figure}`} />}
+        value={<img src={`static/${submission.figure.id}`} />}
       />
       <div style={{ margin: "10px 0" }} />
       <SubmissionFieldList
@@ -137,8 +144,8 @@ const Component = ({ match }) => {
       <SubmissionField
         label="Awknowledgements"
         values={
-          <a download href={`static/${submission.upload}`}>
-            {submission.upload}
+          <a download href={`static/${submission.upload.id}`}>
+            {submission.upload.read.filename}
           </a>
         }
       />
